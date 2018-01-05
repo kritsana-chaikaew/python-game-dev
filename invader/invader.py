@@ -6,6 +6,7 @@ import cocos.layer
 from collections import defaultdict
 from pyglet.window import key
 from pyglet.image import load, ImageGrid, Animation
+import random
 
 class Actor(cocos.sprite.Sprite):
     def __init__(self, image, x, y):
@@ -33,6 +34,10 @@ class PlayerCannon(Actor):
 
     def update(self, elapsed):
         pressed = PlayerCannon.KEY_PRESSED
+        space_pressed = pressed[key.SPACE] == 1
+        if PlayerShoot.INSTANCE is None and space_pressed:
+            self.parent.add(PlayerShoot(self.x, self.y + 50))
+
         movement = pressed[key.RIGHT] - pressed[key.LEFT]
         w = self.width / 2
         if movement != 0 and w <= self.x <= self.parent.width - w:
@@ -76,7 +81,10 @@ class AlienColumn(object):
         self.aliens.remove(alien)
 
     def shoot(self):
-        pass
+        if random.random() < 0.001 and len(self.aliens) > 0:
+            pos = self.aliens[0].position
+            return Shoot(pos[0], pos[1] - 50)
+        return None
 
     def should_turn(self, d):
         if len(self.aliens) == 0:
@@ -123,6 +131,26 @@ class Shoot(Actor):
     def update(self, elapsed):
         self.move(self.speed*elapsed)
 
+class PlayerShoot(Shoot):
+    INSTANCE = None
+
+    def __init__(self, x, y):
+        super(PlayerShoot, self).__init__(x, y, 'img/laser.png')
+        self.speed *= -1
+        PlayerShoot.INSTANCE = self
+
+    def collide(self, other):
+        if isinstance(other, Alien):
+            self.parent.update_score(other.score)
+            other.kill()
+            self.kill()
+
+    def on_exit(self):
+        super(PlayerShoot, self).on_exit()
+        PlayerShoot.INSTANCE = None
+
+
+
 class GameLayer(cocos.layer.Layer):
     is_event_handler = True
 
@@ -163,10 +191,26 @@ class GameLayer(cocos.layer.Layer):
             self.collman.add(node)
             if not self.collman.knows(node):
                 self.remove(node)
+
+        self.collide(PlayerShoot.INSTANCE)
+        if self.collide(self.player):
+            self.respawn_player()
+        for column in self.alien_group.columns:
+            shoot = column.shoot()
+            if shoot is not None:
+                self.add(shoot)
+
         for _, node in self.children:
             node.update(dt)
 
-    def collide(delf, node):
+    def respawn_player(self):
+        self.lives -= 1
+        if self.lives < 0:
+            self.unschedule(self.update)
+        else:
+            self.create_player()
+
+    def collide(self, node):
         if node is not None:
             for other in self.collman.iter_colliding(node):
                 node.collide(other)
