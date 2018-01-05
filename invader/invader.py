@@ -115,6 +115,14 @@ class AlienGroup(object):
             for alien in column.aliens:
                 yield alien
 
+class Shoot(Actor):
+    def __init__(self, x, y, img='img/shoot.png'):
+        super(Shoot, self,).__init__(img, x, y)
+        self.speed = eu.Vector2(0, -400)
+
+    def update(self, elapsed):
+        self.move(self.speed*elapsed)
+
 class GameLayer(cocos.layer.Layer):
     is_event_handler = True
 
