@@ -35,6 +35,11 @@ class MainLayer(cocos.layer.Layer):
         self.pressed[k] = 0
 
     def update(self, dt):
+        self.collman.clear()
+        for _, node in self.children:
+            self.collman.add(node)
+        for other in self.collman.iter_colliding(self.player):
+            self.remove(other)
         x = self.pressed[key.RIGHT] - self.pressed[key.LEFT]
         y = self.pressed[key.UP] - self.pressed[key.DOWN]
         if x != 0 or y != 0:
@@ -42,6 +47,7 @@ class MainLayer(cocos.layer.Layer):
             new_x = pos[0] + (self.speed * x * dt)
             new_y = pos[1] + (self.speed * y * dt)
             self.player.position = (new_x, new_y)
+            self.player.cshape.center = self.player.position
 
 if __name__ == '__main__':
     cocos.director.director.init(caption='Hello, Cocos')
