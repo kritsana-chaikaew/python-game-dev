@@ -25,9 +25,9 @@ class Game(tk.Frame):
         self.setup_game()
         self.canvas.focus_set()
         self.canvas.bind('<Left>',
-                lambda _: self.paddle.move(-25))
+                lambda _: self.paddle.move(-self.paddle.speed))
         self.canvas.bind('<Right>',
-                lambda _: self.paddle.move(25))
+                lambda _: self.paddle.move(self.paddle.speed))
 
     def setup_game(self):
         self.add_ball()
@@ -128,7 +128,7 @@ class Ball(GameObject):
 
     def collide(self, game_objects):
         coords = self.get_position()
-        x = (coords[0] + coords[1]) / 2
+        x = (coords[0] + coords[2]) / 2
         if len(game_objects) > 1:
             self.direction[1] *= -1
         elif len(game_objects) == 1:
@@ -149,6 +149,7 @@ class Paddle(GameObject):
         self.width = 80
         self.height = 10
         self.ball = None
+        self.speed = 20
         item = canvas.create_rectangle(
                 x-(self.width/2), y-(self.height/2),
                 x+(self.width/2), y+(self.height/2),
