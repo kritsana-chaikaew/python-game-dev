@@ -88,6 +88,17 @@ class Ball(GameObject):
                 fill='white')
         super(Ball, self).__init__(canvas, item)
 
+    def update(self):
+        coords = self.get_position()
+        width = self.canvas.winfo_width()
+        if coords[0] <= 0 or coords[2] >= width:
+            self.direction[0] *= -1
+        if coords[1] <=0 :
+            self.direction *= -1
+        x = self.direction[0] * self.speed
+        y = self.direction[1] * self.speed
+        self.move(x, y)
+
 class Paddle(GameObject):
     def __init__(self, canvas, x, y):
         self.width = 80
