@@ -52,8 +52,8 @@ class Alien(Actor):
             '3': (load_animation('img/alien3.png'), 10)
     }
 
-    def form_type(x, y, alien_type, column):
-        animation, score = Alien.TYPE[alien_type]
+    def from_type(x, y, alien_type, column):
+        animation, score = Alien.TYPES[alien_type]
         return Alien(animation, x, y, score, column)
 
     def __init__(self, img, x, y, score, column=None):
@@ -66,7 +66,7 @@ class Alien(Actor):
         if self.column:
             self.column.remove(self)
 
-class AlienColum(object):
+class AlienColumn(object):
     def __init__(self, x, y):
         alien_types = enumerate(['3', '3', '2', '2', '1'])
         self.aliens = [Alien.from_type(x, y+i*60, alien, self)
@@ -86,6 +86,34 @@ class AlienColum(object):
         width = self.parent.width
         return x >= width - 50 and d == 1 \
                 or x <= 50 and d == -1
+
+class AlienGroup(object):
+    def __init__(self, x, y):
+        self.columns = [AlienColumn(x+i*60, y)
+                for i in range(10)]
+        self.speed = eu.Vector2(10, 0)
+        self.direction = 1
+        self.elapsed = 0.0
+        self.period = 1.0
+
+    def update(self, elapsed):
+        self.elapsed += elapsed
+        while self.elapsed >= self.period:
+            self.elapsed -= self.period
+            offset = self.direction * self.speed
+            if self.side_reached():
+                self.direction *= -1
+                offset = eu.Vector2(0, -10)
+            for alien in self:
+                alien.move(offset)
+
+    def side_reached(self):
+        return any(map(lambda c: c.should_turn(self.direction), self.columns))
+
+    def __iter__(self):
+        for column in self.columns:
+            for alien in column.aliens:
+                yield alien
 
 class GameLayer(cocos.layer.Layer):
     is_event_handler = True
@@ -117,7 +145,9 @@ class GameLayer(cocos.layer.Layer):
         self.score += score
 
     def create_alien_group(self, x, y):
-        pass
+        self.alien_group = AlienGroup(x, y)
+        for alien in self.alien_group:
+            self.add(alien)
 
     def update(self, dt):
         self.collman.clear()
