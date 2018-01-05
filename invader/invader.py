@@ -5,6 +5,7 @@ import cocos.layer
 
 from collections import defaultdict
 from pyglet.window import key
+from pyglet.image import load, ImageGrid, Animation
 
 class Actor(cocos.sprite.Sprite):
     def __init__(self, image, x, y):
@@ -40,6 +41,51 @@ class PlayerCannon(Actor):
     def collide(self, other):
         other.kill()
         self.kill()
+
+class Alien(Actor):
+    def load_animation(image):
+        seq = ImageGrid(load(image), 2, 1)
+        return Animation.from_image_sequence(seq, 0.5)
+    TYPES = {
+            '1': (load_animation('img/alien1.png'), 40),
+            '2': (load_animation('img/alien2.png'), 20),
+            '3': (load_animation('img/alien3.png'), 10)
+    }
+
+    def form_type(x, y, alien_type, column):
+        animation, score = Alien.TYPE[alien_type]
+        return Alien(animation, x, y, score, column)
+
+    def __init__(self, img, x, y, score, column=None):
+        super(Alien, self).__init__(img, x, y)
+        self.score = score
+        self.column = column
+
+    def on_exit(self):
+        super(Alien, self).on_exit()
+        if self.column:
+            self.column.remove(self)
+
+class AlienColum(object):
+    def __init__(self, x, y):
+        alien_types = enumerate(['3', '3', '2', '2', '1'])
+        self.aliens = [Alien.from_type(x, y+i*60, alien, self)
+                for i, alien in alien_types]
+
+    def remove(self, alien):
+        self.aliens.remove(alien)
+
+    def shoot(self):
+        pass
+
+    def should_turn(self, d):
+        if len(self.aliens) == 0:
+            return False
+        alien = self.aliens[0]
+        x = alien.x
+        width = self.parent.width
+        return x >= width - 50 and d == 1 \
+                or x <= 50 and d == -1
 
 class GameLayer(cocos.layer.Layer):
     is_event_handler = True
