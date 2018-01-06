@@ -160,9 +160,10 @@ class GameLayer(cocos.layer.Layer):
     def on_key_release(self, k, _):
         PlayerCannon.KEY_PRESSED[k] = 0
 
-    def __init__(self):
+    def __init__(self, hud):
         super(GameLayer, self).__init__()
         w, h = cocos.director.director.get_window_size()
+        self.hud = hud
         self.width = w
         self.height = h
         self.lives = 3
@@ -176,9 +177,11 @@ class GameLayer(cocos.layer.Layer):
     def create_player(self):
         self.player = PlayerCannon(self.width/2, 50)
         self.add(self.player)
+        self.hud.update_lives(self.lives)
 
     def update_score(self, score=0):
         self.score += score
+        self.hud.update_score(self.score)
 
     def create_alien_group(self, x, y):
         self.alien_group = AlienGroup(x, y)
@@ -207,6 +210,7 @@ class GameLayer(cocos.layer.Layer):
         self.lives -= 1
         if self.lives < 0:
             self.unschedule(self.update)
+            self.hud.show_game_over()
         else:
             self.create_player()
 
@@ -219,7 +223,7 @@ class GameLayer(cocos.layer.Layer):
 
 class HUD(cocos.layer.Layer):
     def __init__(self):
-        super(HUD, self).__ini__()
+        super(HUD, self).__init__()
         w, h = cocos.director.director.get_window_size()
         self.score_text = cocos.text.Label('', font_size=18)
         self.score_text.position = (20, h - 40)
@@ -245,6 +249,9 @@ class HUD(cocos.layer.Layer):
 if __name__ == '__main__':
     cocos.director.director.init(caption='Cocos Invaders',
             width=800, height=600)
-    game_layer =GameLayer()
-    main_scene = cocos.scene.Scene(game_layer)
+    main_scene = cocos.scene.Scene()
+    hud_layer = HUD()
+    main_scene.add(hud_layer, z=1)
+    game_layer = GameLayer(hud_layer)
+    main_scene.add(game_layer, z=0)
     cocos.director.director.run(main_scene)
