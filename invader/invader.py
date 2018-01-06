@@ -217,6 +217,31 @@ class GameLayer(cocos.layer.Layer):
                 return True
         return False
 
+class HUD(cocos.layer.Layer):
+    def __init__(self):
+        super(HUD, self).__ini__()
+        w, h = cocos.director.director.get_window_size()
+        self.score_text = cocos.text.Label('', font_size=18)
+        self.score_text.position = (20, h - 40)
+        self.lives_text = cocos.text.Label('', font_size=18)
+        self.lives_text.position = (w - 100, h - 40)
+        self.add(self.score_text)
+        self.add(self.lives_text)
+
+    def update_score(self, score):
+        self.score_text.element.text = 'Score: %s' % score
+
+    def update_lives(self, lives):
+        self.lives_text.element.text = 'Lives: %s' % lives
+
+    def show_game_over(self):
+        w, h = cocos.director.director.get_window_size()
+        game_over = cocos.text.Label('Game Over', font_size=50,
+                anchor_x='center',
+                anchor_y='center')
+        game_over.position = (w / 2, h / 2)
+        self.add(game_over)
+
 if __name__ == '__main__':
     cocos.director.director.init(caption='Cocos Invaders',
             width=800, height=600)
