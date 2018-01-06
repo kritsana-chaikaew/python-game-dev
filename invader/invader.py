@@ -91,7 +91,7 @@ class AlienColumn(object):
             return False
         alien = self.aliens[0]
         x = alien.x
-        width = self.parent.width
+        width = alien.parent.width
         return x >= width - 50 and d == 1 \
                 or x <= 50 and d == -1
 
@@ -198,6 +198,7 @@ class GameLayer(cocos.layer.Layer):
         self.collide(PlayerShoot.INSTANCE)
         if self.collide(self.player):
             self.respawn_player()
+
         for column in self.alien_group.columns:
             shoot = column.shoot()
             if shoot is not None:
@@ -205,6 +206,10 @@ class GameLayer(cocos.layer.Layer):
 
         for _, node in self.children:
             node.update(dt)
+        self.alien_group.update(dt)
+        if random.random() < 0.001:
+            self.add(MysteryShip(50, self.height - 50))
+
 
     def respawn_player(self):
         self.lives -= 1
@@ -245,6 +250,18 @@ class HUD(cocos.layer.Layer):
                 anchor_y='center')
         game_over.position = (w / 2, h / 2)
         self.add(game_over)
+
+class MysteryShip(Alien):
+    SCORES = [10, 50, 100, 200]
+
+    def __init__(self, x, y):
+        score = random.choice(MysteryShip.SCORES)
+        super(MysteryShip, self).__init__('img/alien4.png', x, y, score)
+        self.speed = eu.Vector2(150, 0)
+
+    def update(self, elapsed):
+        self.move(self.speed*elapsed)
+
 
 if __name__ == '__main__':
     cocos.director.director.init(caption='Cocos Invaders',
