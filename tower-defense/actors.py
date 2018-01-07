@@ -45,3 +45,8 @@ class Shoot(cocos.sprite.Sprite):
         self.do(ac.MoveBy(offset, 0.1)
                 +ac.CallFunc(self.kill)
                 +ac.CallFunc(target.hit))
+
+class TurretSlot(object):
+    def __init__(self, pos, side):
+        self.cshape = cm.AARectShape(eu.(Vector2(*pos),
+                side/2, side/2))
