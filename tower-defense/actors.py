@@ -30,3 +30,11 @@ class Turret(Actor):
             offset = eu.Vector2(self.target.x-self.x, self.target.y-self.y)
             pos = self.cshape.center + offset.normalzed() * 20
             self.parent.add(Shoot(pos, offset, self.target))
+
+    def collide(self, other):
+        self.target = other
+        if self.target is not None:
+            x = other.x - self.x
+            y = other.y - self.y
+            angle = -math.atan2(y, x)
+            self.rotation = math.degrees(angle)
