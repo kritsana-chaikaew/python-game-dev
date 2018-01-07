@@ -38,3 +38,10 @@ class Turret(Actor):
             y = other.y - self.y
             angle = -math.atan2(y, x)
             self.rotation = math.degrees(angle)
+
+class Shoot(cocos.sprite.Sprite):
+    def __init__(self, pos, offset, target):
+        super(Shoot, self).__init__('shoot.png', position=pos)
+        self.do(ac.MoveBy(offset, 0.1)
+                +ac.CallFunc(self.kill)
+                +ac.CallFunc(target.hit))
