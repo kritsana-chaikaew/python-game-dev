@@ -56,5 +56,12 @@ class Enemt(Actor):
         super(Enemy, self).__init__('tank.png', x, y)
         self.health = 100
         self.score = 20
-        self.detroyed = False
+        self.destroyed = False
         self.do(actions)
+
+    def hit(self):
+        self.health -= 25
+        self.do(Hit())
+        if self.health <= 0 and self.is_running:
+            self.destroyed = True
+            self.explode()
