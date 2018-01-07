@@ -78,3 +78,15 @@ class Explosion(cocos.sprite.Sprite):
     def __init__(self, pos):
         super(Explosion, self).__init__(explosion_img, pos)
         self.do(ac.Delay(1)+ac.CallFunc(self.kill))
+
+class Bunker(Actor):
+    def __init__(self, x, y):
+        super(Bunker, self).__init__('bunker.png', x, y)
+        self.hp = 100
+
+    def collide(self, other):
+        if isinstance(other, Enemy):
+            self.hp -= 10
+            other.explode()
+            if self.hp <= 0 and self.is_running:
+                self.kill()
