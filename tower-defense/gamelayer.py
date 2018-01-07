@@ -23,3 +23,15 @@ def game_over():
     func = lambda: director.replace(new_scene)
     scene.do(ac.Delay(3)+ac.CallFunc(func))
     return scene
+
+class GameLayer(cocos.layer.Layer):
+    def __init__(self, hud, scenario):
+        super(GameLayer, self).__init__()
+        self.hud = hud
+        self.scenario = scenario
+        self.score = self._score = 0
+        self.points = self._points = 40
+        self.turrets = []
+
+        w, h = director.get_window_size()
+        cell_size = 32
