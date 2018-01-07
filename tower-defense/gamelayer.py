@@ -85,7 +85,7 @@ class GameLayer(cocos.layer.Layer):
             turret = actors.Turret(*slot.cshape.center)
             self.turrets.append(turret)
             self.add(turret)
-            self.difficulty += 0.001
+            self.difficulty += 0.0005
 
     def remove(self, obj):
         if obj is self.bunker:
