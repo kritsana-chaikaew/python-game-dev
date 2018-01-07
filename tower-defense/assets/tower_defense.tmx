@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.0" orientation="orthogonal" renderorder="right-down" width="20" height="15" tilewidth="32" tileheight="32" nextobjectid="1">
- <tileset firstgid="1" name="map0" tilewidth="32" tileheight="32" tilecount="48">
-  <image source="../../../Downloads/9781785281532_code/Chapter 3/code/towerdefense/assets/tmw_desert.png" width="256" height="192"/>
+ <tileset firstgid="1" name="tmw_desert" tilewidth="32" tileheight="32">
+  <image source="tmw_desert.png" width="256" height="192"/>
  </tileset>
- <layer name="Tile Layer 1" width="20" height="15">
+ <layer name="map0" width="20" height="15">
   <data encoding="base64" compression="zlib">
-   eJyTZGBgkKIiVgRiJSpimHkqQKxFBQwzTxmI5YBYDYoZgZiZDD4u8wSBWJgMPsw8HSrEhTSV4wPkR00qxIEqknmUhr8aWhxQGv7o5lEjT+gimUfNvKFMhbhAxtpUig9sfEriA5kPADFjI+M=
+   eJyTY2BgkANiSSCWIhNLQ81AxopArEQmVsZjngoQa5GItfGYB7KLEYiZkeQI8bFhZPMEgVgYSY4QH595OoM0PjTJiAdVPOYhY2LjQ5FI84iND2zmkZsnQFgXi3nkxgGu+CA1DojNH6TmCUJ5hNQ8gSuPAADLoiKu
   </data>
  </layer>
 </map>
