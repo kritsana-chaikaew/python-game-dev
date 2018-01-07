@@ -50,3 +50,11 @@ class TurretSlot(object):
     def __init__(self, pos, side):
         self.cshape = cm.AARectShape(eu.(Vector2(*pos),
                 side/2, side/2))
+
+class Enemt(Actor):
+    def __init__(self, x, y, actions):
+        super(Enemy, self).__init__('tank.png', x, y)
+        self.health = 100
+        self.score = 20
+        self.detroyed = False
+        self.do(actions)
