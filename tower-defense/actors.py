@@ -69,3 +69,12 @@ class Enemt(Actor):
     def explode(self):
         self.parent.add(Explosion(self.position))
         self.kill()
+
+raw = pyglet.image.load('explosion.png')
+seq = pyglet.image.ImageGrid(raw, 1, 8)
+explosion_img = Amination.from_image_sequence(seq, 0.07, False)
+
+class Explosion(cocos.sprite.Sprite):
+    def __init__(self, pos):
+        super(Explosion, self).__init__(explosion_img, pos)
+        self.do(ac.Delay(1)+ac.CallFunc(self.kill))
