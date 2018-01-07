@@ -106,3 +106,30 @@ class GameLayer(cocos.layer.Layer):
             self.score += obj.score
             self.points += 5
         super(GameLayer, self).remove(obj)
+
+class HUD(cocos.layer.Layer):
+    def __init__(self):
+        super(HUD, self).__init__()
+        w, h = director.get_window_size()
+        self.score_text = self._create_text(60, h-40)
+        self.scote_points = self._create_text(w-60, h-40)
+
+    def _create_text(self, x, y):
+        text = cocos.text.Label(font_size=18, font_name='Oswald',
+                anchor_x='center', anchor_y='center')
+        text.position = (x, y)
+        self.add(text)
+        return text
+
+    def update_score(self, score):
+        self.score_text.element.text = 'Score: %s' % score
+
+    def update_points(self, points):
+        self.score_points.element.text = 'Points: %s' % points
+
+def new_game():
+    scenario = get_scenario()
+    background = scenario.get_background()
+    hud = HUD()
+    game_layer = GameLayer(hud, scenario)
+    return cocos.scene.Scene(background, game_layer, hud)
