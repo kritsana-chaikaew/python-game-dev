@@ -1,4 +1,4 @@
-import cocos.tile
+import cocos.tiles
 import cocos.actions as ac
 
 RIGHT = ac.RotateBy(90, 1)
@@ -14,7 +14,7 @@ class Scenario(object):
         self.turret_slots = turrets
         self.bunker_position = bunker
         self.enemy_start = enemy_start
-        self.actions = None
+        self._actions = None
 
     def get_background(self):
         tmx_map = cocos.tiles.load('assets/tower_defense.tmx')
@@ -28,7 +28,7 @@ class Scenario(object):
 
     @actions.setter
     def actions(self, actions):
-        self._actions = ac RotateBy(90, 0.5)
+        self._actions = ac.RotateBy(90, 0.5)
         for step in actions:
             self._actions += step
 
@@ -39,7 +39,9 @@ def get_scenario():
     bunker_position = (528, 430)
     enemy_start = (-80, 110)
     sc = Scenario('map0', turret_slots, bunker_position, enemy_start)
-    sc.actions = [move(610, 0), LEFT, move(0, 160), LEFT,
-            move(-415, 0), RIGHT, move(0, 160), RIGHT,
-            move(0, 160), RIGHT, move(420, 0)]
+    sc.actions = [move(610, 0), LEFT,
+            move(0, 160), LEFT,
+            move(-415, 0), RIGHT,
+            move(0, 160), RIGHT,
+            move(420, 0)]
     return sc

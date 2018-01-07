@@ -3,7 +3,7 @@ import cocos.scene
 import cocos.layer
 import cocos.actions as ac
 from cocos.director import director
-from cocos.scene.transitions import FadeTRTransition
+from cocos.scenes.transitions import FadeTRTransition
 
 import pyglet.app
 
@@ -20,12 +20,12 @@ class MainMenu(cocos.menu.Menu):
         self.menu_anchor_y = 'center'
         self.menu_anchor_x = 'center'
 
-        item = list()
-        item.append(MenuItem('New Game', self.on_new_game))
-        item.append(ToggleMenuItem('Show FPS: ', self.show_fps,
+        items = list()
+        items.append(cocos.menu.MenuItem('New Game', self.on_new_game))
+        items.append(cocos.menu.ToggleMenuItem('Show FPS: ', self.show_fps,
                 director.show_FPS))
-        items.append(MenuItem('Quit', pyglet.app.exit))
-        self.create_menu(item, ac.ScaleTo(1.25, duration=0.25),
+        items.append(cocos.menu.MenuItem('Quit', pyglet.app.exit))
+        self.create_menu(items, ac.ScaleTo(1.25, duration=0.25),
                 ac.ScaleTo(1.0, duration=0.25))
 
     def on_new_game(self):

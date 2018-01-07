@@ -1,7 +1,7 @@
 import random
 
 from cocos.director import director
-from cocos.scene.transitions import SplitColsTransition, FadeTransition
+from cocos.scenes.transitions import SplitColsTransition, FadeTransition
 import cocos.layer
 import cocos.scene
 import cocos.text
@@ -10,21 +10,7 @@ import cocos.collision_model as cm
 
 import actors
 import mainmenu
-import scenario import get_scenario
-
-def game_over():
-    w, h = director.get_window_size()
-    layer = cocos.layer.Layer()
-    text = cocos.text.Label('Game Over', position=(w/2, h/2),
-            font_name='Oswald', font_size=72,
-            anchor_x='center',
-            anchor_y='center')
-    layer.add(text)
-    scene = cocos.scene.Scene(layer)
-    new_scene = FadeTransition(mainmenu.new_menu())
-    func = lambda: director.replace(new_scene)
-    scene.do(ac.Delay(3)+ac.CallFunc(func))
-    return scene
+from scenario import get_scenario
 
 class GameLayer(cocos.layer.Layer):
     is_event_handler = True
@@ -35,6 +21,7 @@ class GameLayer(cocos.layer.Layer):
         self.score = self._score = 0
         self.points = self._points = 40
         self.turrets = []
+        self.difficulty = 0.002
 
         w, h = director.get_window_size()
         cell_size = 32
@@ -75,13 +62,13 @@ class GameLayer(cocos.layer.Layer):
                 self.coll_man.add(obj)
 
         for turret in self.turrets:
-            obj = next(self.coll_man.iter_colling(turret), None)
+            obj = next(self.coll_man.iter_colliding(turret), None)
             turret.collide(obj)
 
-        for obj in self.coll_man.iter_colling(self.bunker):
+        for obj in self.coll_man.iter_colliding(self.bunker):
             self.bunker.collide(obj)
 
-        if random.random() < 0.005:
+        if random.random() < self.difficulty:
             self.create_enemy()
 
     def create_enemy(self):
@@ -98,10 +85,11 @@ class GameLayer(cocos.layer.Layer):
             turret = actors.Turret(*slot.cshape.center)
             self.turrets.append(turret)
             self.add(turret)
+            self.difficulty += 0.001
 
     def remove(self, obj):
         if obj is self.bunker:
-            director.replace(SpriteColsTransition(game_over()))
+            director.replace(SplitColsTransition(game_over()))
         elif isinstance(obj, actors.Enemy) and obj.destroyed:
             self.score += obj.score
             self.points += 5
@@ -112,7 +100,7 @@ class HUD(cocos.layer.Layer):
         super(HUD, self).__init__()
         w, h = director.get_window_size()
         self.score_text = self._create_text(60, h-40)
-        self.scote_points = self._create_text(w-60, h-40)
+        self.score_points = self._create_text(w-60, h-40)
 
     def _create_text(self, x, y):
         text = cocos.text.Label(font_size=18, font_name='Oswald',
@@ -133,3 +121,17 @@ def new_game():
     hud = HUD()
     game_layer = GameLayer(hud, scenario)
     return cocos.scene.Scene(background, game_layer, hud)
+
+def game_over():
+    w, h = director.get_window_size()
+    layer = cocos.layer.Layer()
+    text = cocos.text.Label('Game Over', position=(w/2, h/2),
+            font_name='Oswald', font_size=72,
+            anchor_x='center',
+            anchor_y='center')
+    layer.add(text)
+    scene = cocos.scene.Scene(layer)
+    new_scene = FadeTransition(mainmenu.new_menu())
+    func = lambda: director.replace(new_scene)
+    scene.do(ac.Delay(3)+ac.CallFunc(func))
+    return scene
