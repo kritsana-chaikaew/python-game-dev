@@ -65,3 +65,7 @@ class Enemt(Actor):
         if self.health <= 0 and self.is_running:
             self.destroyed = True
             self.explode()
+
+    def explode(self):
+        self.parent.add(Explosion(self.position))
+        self.kill()
