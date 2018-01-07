@@ -21,3 +21,12 @@ class Turret(Actor):
         self.period = 2.0
         self.reload = 0.0
         self.schedule(self._shoot)
+
+    def shoot(self, dt):
+        if self.reload < self.period:
+            self.reload += dt
+        elif self.target is not None:
+            self.reload -= self.period
+            offset = eu.Vector2(self.target.x-self.x, self.target.y-self.y)
+            pos = self.cshape.center + offset.normalzed() * 20
+            self.parent.add(Shoot(pos, offset, self.target))
